@@ -113,3 +113,13 @@
   []
   ;;TODO
   )
+
+(defn connectivity
+  "计算链的联通度"
+  [chain]
+  (reduce
+   (fn [m n]
+     (let [c (apply + (map m (:pre-level-hash-set n)))]
+       (assoc m (:hash n) c)))
+   {(:hash genesis-node) 1}
+   (flatten (map vec (rest chain)))))
