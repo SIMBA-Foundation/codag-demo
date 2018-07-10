@@ -1,16 +1,16 @@
-(ns jim-chain.main
+(ns codag-demo.main
   (:require [compojure.core :refer :all]
             [compojure.route :as route]
             [compojure.handler :as handler]
             [ring.adapter.jetty :as adpater]
             [ring.util.response :refer [response]]
             [ring.middleware.json :as middleware]
-            [jim-chain.core :as core]))
+            [codag-demo.core :as core]))
 
 (defroutes app
-  (POST "/transactions/new" {{:strs [sender recipient amount]} :body}
+  (POST "/transactions/new" {{:strs [from to amount]} :body}
         (do
-          (core/add-transaction! sender recipient amount)
+          (core/add-transaction! from to amount)
           (response {:result true})))
   (POST "/mine" [] (response
                     (do
@@ -19,11 +19,11 @@
                        :result true})))
   (GET "/chain" [] (response
                     @core/chain))
-  (GET "/nodes" [] (response
-                    @core/nodes))
-  (POST "/nodes/new" {{:strs [address]} :body}
+  (GET "/peers" [] (response
+                    @core/peers))
+  (POST "/peers/new" {{:strs [address]} :body}
         (do
-          (core/add-node! address)
+          (core/add-peer! address)
           (response
            {:result true})))
   (POST "/sync" []
@@ -53,6 +53,5 @@
 ;;(-main 2021)
 ;;(stop)
 ;;curl -H "Content-Type: application/json" -X GET  http://localhost:2021/chain
-;;curl -H "Content-Type: application/json" -X POST -d '{"sender":"aaa", "recipient":"bbb", "amount":100}' http://localhost:2021/transactions/new
+;;curl -H "Content-Type: application/json" -X POST -d '{"from":"aaa", "to":"bbb", "amount":100}' http://localhost:2021/transactions/new
 ;;curl -H "Content-Type: application/json" -X POST  http://localhost:2021/mine
-;;curl -H "Content-Type: application/json" -X GET  http://localhost:2021/chain
